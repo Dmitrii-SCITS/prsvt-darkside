@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRSVT DARKSIDE</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Arial', sans-serif; color:#fff; background:#000; overflow-x:hidden; cursor:pointer; }
+canvas { position:fixed; top:0; left:0; z-index:0; }
+header { position:relative; height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; z-index:1; }
+header h1 { font-size:4rem; color:#00ffea; text-shadow:0 0 20px #00ffea; animation:glow 2s infinite alternate; z-index:1; }
+@keyframes glow { from { text-shadow:0 0 10px #00ffea,0 0 20px #00ffea,0 0 30px #00ffea;} to { text-shadow:0 0 20px #00ffea,0 0 30px #00ffea,0 0 40px #00ffea;} }
+nav { position:fixed; top:0; left:0; width:100%; padding:1rem 2rem; display:flex; justify-content:flex-end; background: rgba(0,0,0,0.5); z-index:2; }
+nav a { color:#fff; margin-left:2rem; text-decoration:none; font-weight:bold; transition:0.3s; }
+nav a:hover { color:#00ffea; }
+section { padding:5rem 2rem; max-width:1000px; margin:auto; z-index:2; position:relative; }
+section h2 { font-size:2.5rem; margin-bottom:2rem; color:#00ffea; text-align:center; text-shadow:0 0 10px #00ffea; }
+.about, .events, .gallery, .contact { margin-bottom:5rem; }
+.events ul { list-style:none; }
+.events li { background:rgba(0,0,0,0.7); margin:1rem 0; padding:1rem; border-left:5px solid #00ffea; }
+.gallery img { width:100%; max-width:300px; margin:1rem; border-radius:10px; transition:transform 0.3s; }
+.gallery img:hover { transform:scale(1.05); }
+.contact form { display:flex; flex-direction:column; }
+.contact input, .contact textarea { padding:1rem; margin-bottom:1rem; border:none; border-radius:5px; font-size:1rem; }
+.contact button { padding:1rem; border:none; border-radius:5px; background:#00ffea; color:#000; font-weight:bold; cursor:pointer; transition:0.3s; }
+.contact button:hover { background:#00ddb3; }
+footer { text-align:center; padding:2rem; background: rgba(0,0,0,0.8); color:#fff; }
+@media(max-width:768px){ header h1 { font-size:3rem; } nav { justify-content:center; } }
+</style>
+</head>
+<body>
+
+<canvas id="particleCanvas"></canvas>
+
+<nav>
+  <a href="#about">О нас</a>
+  <a href="#events">События</a>
+  <a href="#gallery">Галерея</a>
+  <a href="#contact">Контакты</a>
+</nav>
+
+<header>
+  <h1>PRSVT DARKSIDE</h1>
+  <p>Кликните на страницу, чтобы включить музыку и визуализацию</p>
+</header>
+
+<section id="about" class="about">
+  <h2>О нас</h2>
+  <p>Мы организуем незабываемые мероприятия на природе с электронной музыкой. Природа, друзья и свобода ждут тебя!</p>
+</section>
+
+<section id="events" class="events">
+  <h2>События</h2>
+  <ul>
+    <li>15 ноября — Вечер Ambient & Chill</li>
+    <li>22 ноября — Night Electro Party</li>
+    <li>30 ноября — DJ Set на свежем воздухе</li>
+  </ul>
+</section>
+
+<section id="gallery" class="gallery">
+  <h2>Галерея</h2>
+  <div style="display:flex; flex-wrap:wrap; justify-content:center;">
+    <img src="https://images.unsplash.com/photo-1504198458649-3128b932f49b?auto=format&fit=crop&w=800&q=80" alt="Фото 1">
+    <img src="https://images.unsplash.com/photo-1525097487452-6278ff080c31?auto=format&fit=crop&w=800&q=80" alt="Фото 2">
+    <img src="https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?auto=format&fit=crop&w=800&q=80" alt="Фото 3">
+  </div>
+</section>
+
+<section id="contact" class="contact">
+  <h2>Контакты</h2>
+  <form>
+    <input type="text" placeholder="Ваше имя" required>
+    <input type="email" placeholder="Email" required>
+    <textarea placeholder="Сообщение" rows="5" required></textarea>
+    <button type="submit">Отправить</button>
+  </form>
+</section>
+
+<footer>
+  © 2025 PRSVT DARKSIDE. Все права защищены.
+</footer>
+
+<script>
+// Canvas и частицы
+const canvas = document.getElementById('particleCanvas');
+const ctx = canvas.getContext('2d');
+let w = canvas.width = window.innerWidth;
+let h = canvas.height = window.innerHeight;
+
+const particleCount = 120;
+const particles = [];
+
+for(let i=0;i<particleCount;i++){
+  particles.push({
+    x:Math.random()*w,
+    y:Math.random()*h,
+    r:Math.random()*2+1,
+    dx:(Math.random()-0.5)*2,
+    dy:(Math.random()-0.5)*2,
+    color:`hsl(${Math.random()*360},100%,50%)`
+  });
+}
+
+function animate(){
+  ctx.clearRect(0,0,w,h);
+  for(let i=0;i<particles.length;i++){
+    const p = particles[i];
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle = p.color;
+    ctx.fill();
+
+    p.x += p.dx;
+    p.y += p.dy;
+    if(p.x<0||p.x>w)p.dx*=-1;
+    if(p.y<0||p.y>h)p.dy*=-1;
+
+    for(let j=i+1;j<particles.length;j++){
+      const q = particles[j];
+      const dist = Math.hypot(p.x-q.x,p.y-q.y);
+      if(dist<100){
+        ctx.beginPath();
+        ctx.moveTo(p.x,p.y);
+        ctx.lineTo(q.x,q.y);
+        ctx.strokeStyle = `rgba(0,255,234,${1-dist/100})`;
+        ctx.lineWidth=1;
+        ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(animate);
+}
+
+animate();
+
+window.addEventListener('resize',()=>{
+  w=canvas.width=window.innerWidth;
+  h=canvas.height=window.innerHeight;
+});
+
+// Музыка
+const tracks = [
+  'tracks/song1.mp3',
+  'tracks/song2.mp3',
+  'tracks/song3.mp3' // добавляйте свои MP3 в папку tracks/
+];
+
+let audioCtx;
+let source;
+let analyser;
+let dataArray;
+
+function visualizer(){
+  analyser.getByteFrequencyData(dataArray);
+  for(let i=0;i<particles.length;i++){
+    const scale = dataArray[i % dataArray.length]/128;
+    particles[i].r = 1 + scale*4;
+  }
+  requestAnimationFrame(visualizer);
+}
+
+// Первый клик по странице запускает музыку
+document.body.addEventListener('click', function initAudio(){
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  playRandomTrack();
+  document.body.removeEventListener('click', initAudio);
+});
+
+function playRandomTrack(){
+  const track = tracks[Math.floor(Math.random()*tracks.length)];
+  fetch(track)
+    .then(r => r.arrayBuffer())
+    .then(arrayBuffer => audioCtx.decodeAudioData(arrayBuffer))
+    .then(buffer => {
+      if(source) source.stop();
+      source = audioCtx.createBufferSource();
+      source.buffer = buffer;
+
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 256;
+      dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+      source.connect(analyser);
+      analyser.connect(audioCtx.destination);
+      source.start();
+
+      visualizer();
+    });
+}
+</script>
+
+</body>
+</html>
